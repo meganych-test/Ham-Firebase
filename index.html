@@ -3,60 +3,42 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Your Game Name</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Unity WebGL Telegram Mini App</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
     <script src="Build/UnityLoader.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
-      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/YourBuildName.json", {onProgress: UnityProgress});
+      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/your_build.json", {onProgress: UnityProgress});
       
-      function UnityProgress(unityInstance, progress) {
-        if (!unityInstance.Module) {
-          return;
-        }
-        if (!unityInstance.logo) {
-          unityInstance.logo = document.createElement("div");
-          unityInstance.logo.className = "logo " + unityInstance.Module.splashScreenStyle;
-          unityInstance.container.appendChild(unityInstance.logo);
-        }
-        if (!unityInstance.progress) {    
-          unityInstance.progress = document.createElement("div");
-          unityInstance.progress.className = "progress " + unityInstance.Module.splashScreenStyle;
-          unityInstance.progress.empty = document.createElement("div");
-          unityInstance.progress.empty.className = "empty";
-          unityInstance.progress.appendChild(unityInstance.progress.empty);
-          unityInstance.progress.full = document.createElement("div");
-          unityInstance.progress.full.className = "full";
-          unityInstance.progress.appendChild(unityInstance.progress.full);
-          unityInstance.container.appendChild(unityInstance.progress);
-        }
-        unityInstance.progress.full.style.width = (100 * progress) + "%";
-        unityInstance.progress.empty.style.width = (100 * (1 - progress)) + "%";
-        if (progress == 1) {
-          unityInstance.logo.style.display = unityInstance.progress.style.display = "none";
-        }
+      // Initialize Firebase
+      var firebaseConfig = {
+        // Your Firebase configuration here
+      };
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+
+      // Telegram WebApp initialization
+      var tg = window.Telegram.WebApp;
+      tg.expand();
+
+      // Function to send data from Unity to Telegram
+      function sendDataToTelegram(data) {
+        tg.sendData(data);
       }
 
-      // Initialize Telegram Mini App
-      window.Telegram.WebApp.ready();
+      // Function to send data from Unity to Firebase
+      function sendDataToFirebase(collection, document, data) {
+        firebase.firestore().collection(collection).doc(document).set(data)
+          .then(() => console.log("Document successfully written!"))
+          .catch((error) => console.error("Error writing document: ", error));
+      }
     </script>
-        <script>
-          window.onload = function() {
-              const tg = window.Telegram.WebApp;
-              // Expand the Web App to full height
-              tg.expand();
-              // Set the background color to black
-              tg.setBackgroundColor('#000000');
-              // Set the header color (you might want to adjust this)
-              tg.setHeaderColor('#000000');
-          };
-      </script>
-    <style>
-      body { padding: 0; margin: 0; }
-      #unityContainer { width: 100vw; height: 100vh; }
-      canvas { width: 100%; height: 100%; }
-    </style>
   </head>
   <body>
-    <div id="unityContainer"></div>
+    <div id="unityContainer" style="width: 100%; height: 100%; margin: auto"></div>
   </body>
 </html>
