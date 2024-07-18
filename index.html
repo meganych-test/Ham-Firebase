@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Game Title</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+        <script>
+          window.onload = function() {
+              const tg = window.Telegram.WebApp;
+              // Expand the Web App to full height
+              tg.expand();
+              // Set the background color to black
+              tg.setBackgroundColor('#000000');
+              // Set the header color (you might want to adjust this)
+              tg.setHeaderColor('#000000');
+          };
+      </script>
+</head>
+<body>
+    <div class="webgl-content">
+        <div id="unityContainer" style="width: 960px; height: 600px"></div>
+        <div class="footer">
+            <div class="webgl-logo"></div>
+            <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+            <div class="title">Your Game Title</div>
+        </div>
+    </div>
+    <script>
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/YOUR_BUILD.loader.js";
+        var config = {
+            dataUrl: buildUrl + "/YOUR_BUILD.data",
+            frameworkUrl: buildUrl + "/YOUR_BUILD.framework.js",
+            codeUrl: buildUrl + "/YOUR_BUILD.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "Your Company",
+            productName: "Your Product",
+            productVersion: "1.0",
+        };
+
+        var unityInstance = UnityLoader.instantiate("unityContainer", loaderUrl, config);
+    </script>
+</body>
+</html>
+
