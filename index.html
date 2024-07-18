@@ -1,72 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unity WebGL Player</title>
-    <!-- Include Unity WebGL build -->
-    <script src="Build/your_unity_build.loader.js"></script>
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js';
-        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js';
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            // Your Firebase configuration object here
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | YourGameName</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+</head>
+<body>
+    <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas"></canvas>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+    <script>
+        var firebaseConfig = {
+            // Your Firebase configuration here
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
 
-        window.registerPlayer = function(telegramId, username, fullName) {
-            const playersRef = ref(database, 'players/' + telegramId);
-            set(playersRef, {
+        var unityInstance = null;
+
+        function InitializeFirebase() {
+            console.log("Firebase initialized from Unity");
+            // Any additional initialization if needed
+        }
+
+        function RegisterPlayer(telegramId, username, fullName) {
+            console.log("Registering player:", telegramId, username, fullName);
+            var database = firebase.database();
+            var playersRef = database.ref('players/' + telegramId);
+            playersRef.set({
                 username: username,
                 full_name: fullName
-            }).then(() => {
+            }).then(function() {
                 console.log("Player registered successfully");
-                window.unityInstance.SendMessage('FirebaseManager', 'RegistrationSuccess');
-            }).catch((error) => {
+                unityInstance.SendMessage('JavascriptHook', 'OnRegistrationSuccess');
+            }).catch(function(error) {
                 console.error("Error registering player:", error);
-                window.unityInstance.SendMessage('FirebaseManager', 'RegistrationFailure', error.message);
+                unityInstance.SendMessage('JavascriptHook', 'OnRegistrationFailure', error.message);
             });
-        };
+        }
 
-        window.callRegisterPlayer = function(telegramId, username, fullName) {
-            window.registerPlayer(telegramId, username, fullName);
-        };
-    </script>
-</head>
-<body>
-    <div id="unity-container" style="width: 100%; height: 100%;">
-        <canvas id="unity-canvas" style="width: 100%; height: 100%;"></canvas>
-    </div>
-    <script>
         var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/your_unity_build.loader.js";
+        var loaderUrl = buildUrl + "/YourBuildName.loader.js";
         var config = {
-            dataUrl: buildUrl + "/your_unity_build.data",
-            frameworkUrl: buildUrl + "/your_unity_build.framework.js",
-            codeUrl: buildUrl + "/your_unity_build.wasm",
+            dataUrl: buildUrl + "/YourBuildName.data",
+            frameworkUrl: buildUrl + "/YourBuildName.framework.js",
+            codeUrl: buildUrl + "/YourBuildName.wasm",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "YourCompanyName",
-            productName: "YourProductName",
+            productName: "YourGameName",
             productVersion: "1.0",
         };
 
         var script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = () => {
-            createUnityInstance(document.querySelector("#unity-canvas"), config)
-                .then((unityInstance) => {
-                    window.unityInstance = unityInstance;
-                    console.log("Unity WebGL player loaded");
-                })
-                .catch((message) => {
-                    alert(message);
-                });
+            createUnityInstance(document.querySelector("#unity-canvas"), config, (progress) => {
+                // Progress update function if needed
+            }).then((instance) => {
+                unityInstance = instance;
+                console.log("Unity instance created successfully");
+            }).catch((message) => {
+                alert(message);
+            });
         };
         document.body.appendChild(script);
     </script>
